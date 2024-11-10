@@ -1,6 +1,9 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import create_engine, ForeignKey
 
+from sqlalchemy.orm import Session, sessionmaker
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -25,3 +28,11 @@ class Cart(Base):
 User.carts = relationship("Cart", back_populates="user")
 engine = create_engine("sqlite:///baza.db", echo=False)
 Base.metadata.create_all(engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
